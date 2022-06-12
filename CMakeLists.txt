@@ -1540,6 +1540,30 @@ add_library(love_3p_luasocket ${LOVE_SRC_3P_LUASOCKET})
 target_link_libraries(love_3p_luasocket ${LOVE_LUA_LIBRARY} ${LOVE_LINK_L3P_LUASOCKET_LIBLUASOCKET})
 
 #
+# moonscript
+#
+
+set(LOVE_SRC_3P_MOONSCRIPT_ROOT
+	src/libraries/moonscript/moonscript.cpp
+	src/libraries/moonscript/moonscript.h
+)
+
+set(LOVE_SRC_3P_MOONSCRIPT_LIBMOONSCRIPT
+	src/libraries/moonscript/libmoonscript/moonscript.c
+	src/libraries/moonscript/libmoonscript/moonscript.h
+	src/libraries/moonscript/libmoonscript/lpeg.c
+	src/libraries/moonscript/libmoonscript/lpeg.h
+)
+
+set(LOVE_SRC_3P_MOONSCRIPT
+	${LOVE_SRC_3P_MOONSCRIPT_ROOT}
+	${LOVE_SRC_3P_MOONSCRIPT_LIBMOONSCRIPT}
+)
+
+add_library(love_3p_moonscript ${LOVE_SRC_3P_MOONSCRIPT})
+target_link_libraries(love_3p_moonscript ${LOVE_LUA_LIBRARY})
+
+#
 # APIs from Lua 5.3
 #
 
@@ -1707,6 +1731,7 @@ set(LOVE_3P
 	love_3p_physfs
 	love_3p_wuff
 	love_3p_xxhash
+	love_3p_moonscript
 )
 
 love_disable_warnings(love_3p_box2d love_3p_enet love_3p_luasocket love_3p_physfs)

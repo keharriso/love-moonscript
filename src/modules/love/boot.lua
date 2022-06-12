@@ -100,6 +100,9 @@ function love.boot()
 	-- Try to use the archive containing main.lua as the identity name. It
 	-- might not be available, in which case the fallbacks above are used.
 	local realdir = love.filesystem.getRealDirectory("main.lua")
+	if not realdir then
+		realdir = love.filesystem.getRealDirectory("main.moon")
+	end
 	if realdir then
 		identity = love.path.leaf(realdir)
 	end
@@ -113,7 +116,7 @@ function love.boot()
 	-- before the save directory (the identity should be appended.)
 	pcall(love.filesystem.setIdentity, identity, true)
 
-	if can_has_game and not (love.filesystem.getInfo("main.lua") or love.filesystem.getInfo("conf.lua")) then
+	if can_has_game and not (love.filesystem.getInfo("main.lua") or love.filesystem.getInfo("main.moon") or love.filesystem.getInfo("conf.lua")) then
 		no_game_code = true
 	end
 
@@ -312,7 +315,7 @@ function love.init()
 	if love.filesystem then
 		love.filesystem._setAndroidSaveExternal(c.externalstorage)
 		love.filesystem.setIdentity(c.identity or love.filesystem.getIdentity(), c.appendidentity)
-		if love.filesystem.getInfo("main.lua") then
+		if love.filesystem.getInfo("main.lua") or love.filesystem.getInfo("main.moon") then
 			require("main")
 		end
 	end
