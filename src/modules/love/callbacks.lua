@@ -184,10 +184,20 @@ end
 local utf8 = require("utf8")
 
 local function error_printer(msg, layer)
-	print((debug.traceback("Error: " .. tostring(msg), 1+(layer or 1)):gsub("\n[^\n]+$", "")))
+	local has_moonscript, moonscript_errors = pcall(require, "moonscript.errors")
+	local trace
+	if has_moonscript then
+		trace = debug.traceback()
+		trace = moonscript_errors.rewrite_traceback(trace, tostring(msg)):gsub("^moon: ", "Error: ") .. "\n"
+	else
+		trace = debug.traceback("Error: " .. tostring(msg)) .. "\n"
+	end
+	io.write((trace:gsub("\t%[love .-%].-\n", ""):gsub("\t%[C%].-'xpcall'.-\n", "")))
 end
 
 function love.errhand(msg)
+	local has_moonscript, moonscript_errors = pcall(require, "moonscript.errors")
+
 	msg = tostring(msg)
 
 	error_printer(msg, 2)
@@ -234,20 +244,28 @@ function love.errhand(msg)
 		table.insert(sanitizedmsg, char)
 	end
 	sanitizedmsg = table.concat(sanitizedmsg)
+	local sanitizedmsg_len = #sanitizedmsg
+	
+	if has_moonscript then
+		trace = moonscript_errors.rewrite_traceback(trace, sanitizedmsg)
+		local newline = trace:find("\n")
+		sanitizedmsg = trace:sub(7, newline - 1)
+		trace = trace:sub(newline + 1)
+	end
 
 	local err = {}
 
 	table.insert(err, "Error\n")
 	table.insert(err, sanitizedmsg)
 
-	if #sanitizedmsg ~= #msg then
+	if sanitizedmsg_len ~= #msg then
 		table.insert(err, "Invalid UTF-8 string in error message.")
 	end
 
 	table.insert(err, "\n")
 
 	for l in trace:gmatch("(.-)\n") do
-		if not l:match("boot.lua") then
+		if not l:match("\t%[love .-%]") and not l:match("\t%[C%].-'xpcall'") then
 			l = l:gsub("stack traceback:", "Traceback\n")
 			table.insert(err, l)
 		end

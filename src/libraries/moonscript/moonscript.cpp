@@ -43,7 +43,7 @@ const char moonscript_package_loader[] =
 "    end\n"
 "  end\n"
 "  if text then\n"
-"    res, err = moonscript.loadstring(text, \"@\"..file_path)\n"
+"    local res, err = moonscript.loadstring(text, \"@\"..file_path)\n"
 "    if not res then\n"
 "      error(file_path..\": \"..err)\n"
 "    end\n"
