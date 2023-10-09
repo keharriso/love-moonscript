@@ -20,7 +20,7 @@
 
 #include "moonscript.h"
 
-extern "C" LUALIB_API int luaopen_moonscript(lua_State *l);
+extern "C" int luaopen_moonscript(lua_State *l);
 
 namespace love
 {
